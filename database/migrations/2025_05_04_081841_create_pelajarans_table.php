@@ -13,7 +13,7 @@ class CreatePelajaransTable extends Migration
     {
         Schema::create('pelajarans', function (Blueprint $table) {
             $table->id();
-            $table->string('nama'); // Nama pelajaran seperti "Matematika", "Bahasa Inggris"
+            $table->string('nama'); 
             $table->timestamps();
         });
     }
