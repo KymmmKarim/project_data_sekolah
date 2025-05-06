@@ -7,6 +7,7 @@ use App\Models\Kelas;
 use App\Models\Pelajaran;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JadwalController extends Controller
 {
@@ -56,7 +57,7 @@ class JadwalController extends Controller
         $errors = [];
 
         foreach ($request->jadwals as $index => $data) {
-            $hari = strtolower(trim($data['hari'])); // Normalisasi
+            $hari = strtolower(trim($data['hari']));
             $exists = Jadwal::whereRaw('LOWER(hari) = ?', [$hari])
                 ->where('kelas_id', $data['kelas_id'])
                 ->where('pelajaran_id', $data['pelajaran_id'])
@@ -72,12 +73,20 @@ class JadwalController extends Controller
             return back()->withErrors($errors)->withInput();
         }
 
-        foreach ($request->jadwals as $data) {
-            $data['hari'] = strtolower(trim($data['hari'])); // Normalisasi saat simpan
-            Jadwal::create($data);
-        }
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('jadwal.index')->with('success', 'Semua jadwal berhasil ditambahkan.');
+            foreach ($request->jadwals as $data) {
+                $data['hari'] = strtolower(trim($data['hari']));
+                Jadwal::create($data);
+            }
+
+            DB::commit();
+            return redirect()->route('jadwal.index')->with('success', 'Semua jadwal berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['Terjadi kesalahan saat menyimpan: ' . $e->getMessage()])->withInput();
+        }
     }
 
     public function edit(Jadwal $jadwal)
@@ -120,24 +129,40 @@ class JadwalController extends Controller
             return back()->withErrors(['Jadwal dengan kombinasi tersebut sudah ada untuk guru ini.'])->withInput();
         }
 
-        $jadwal->update([
-            'hari'         => $hari,
-            'jam_mulai'    => $request->jam_mulai,
-            'jam_selesai'  => $request->jam_selesai,
-            'kelas_id'     => $request->kelas_id,
-            'pelajaran_id' => $request->pelajaran_id,
-            'guru_id'      => $request->guru_id,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
+            $jadwal->update([
+                'hari'         => $hari,
+                'jam_mulai'    => $request->jam_mulai,
+                'jam_selesai'  => $request->jam_selesai,
+                'kelas_id'     => $request->kelas_id,
+                'pelajaran_id' => $request->pelajaran_id,
+                'guru_id'      => $request->guru_id,
+            ]);
+
+            DB::commit();
+            return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['Terjadi kesalahan saat update: ' . $e->getMessage()])->withInput();
+        }
     }
 
     public function destroy(Jadwal $jadwal)
     {
         $this->authorize('hapus data');
 
-        $jadwal->delete();
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil dihapus.');
+            $jadwal->delete();
+
+            DB::commit();
+            return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['Terjadi kesalahan saat menghapus: ' . $e->getMessage()]);
+        }
     }
 }

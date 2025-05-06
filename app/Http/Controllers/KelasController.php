@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kelas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class KelasController extends Controller
 {
@@ -38,11 +39,20 @@ class KelasController extends Controller
             'nama' => 'required|unique:kelas',
         ]);
 
-        Kelas::create([
-            'nama' => $request->nama,
-        ]);
+        DB::beginTransaction();
 
-        return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil ditambahkan.');
+        try {
+            Kelas::create([
+                'nama' => $request->nama,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil ditambahkan.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menambahkan data kelas.'])->withInput();
+        }
     }
 
     public function edit(Kelas $kelas)
@@ -64,19 +74,37 @@ class KelasController extends Controller
             'nama' => 'required|unique:kelas,nama,' . $kelas->id,
         ]);
 
-        $kelas->update([
-            'nama' => $request->nama,
-        ]);
+        DB::beginTransaction();
 
-        return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil diperbarui.');
+        try {
+            $kelas->update([
+                'nama' => $request->nama,
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil diperbarui.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data kelas.'])->withInput();
+        }
     }
 
     public function destroy(Kelas $kelas)
     {
         $this->authorize('hapus data');
 
-        $kelas->delete();
+        DB::beginTransaction();
 
-        return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil dihapus.');
+        try {
+            $kelas->delete();
+
+            DB::commit();
+
+            return redirect()->route('kelas.index')->with('success', 'Data kelas berhasil dihapus.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus data kelas.']);
+        }
     }
 }

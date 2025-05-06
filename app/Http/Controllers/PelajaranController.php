@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pelajaran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PelajaranController extends Controller
 {
@@ -38,9 +39,18 @@ class PelajaranController extends Controller
             'nama' => 'required|string|max:255',
         ]);
 
-        Pelajaran::create($request->all());
+        DB::beginTransaction();
 
-        return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil ditambahkan.');
+        try {
+            Pelajaran::create($request->all());
+
+            DB::commit();
+
+            return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil ditambahkan.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menambahkan pelajaran.'])->withInput();
+        }
     }
 
     public function edit(Pelajaran $pelajaran)
@@ -62,17 +72,35 @@ class PelajaranController extends Controller
             'nama' => 'required|string|max:255',
         ]);
 
-        $pelajaran->update($request->all());
+        DB::beginTransaction();
 
-        return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil diupdate.');
+        try {
+            $pelajaran->update($request->all());
+
+            DB::commit();
+
+            return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil diupdate.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui pelajaran.'])->withInput();
+        }
     }
 
     public function destroy(Pelajaran $pelajaran)
     {
         $this->authorize('hapus data');
 
-        $pelajaran->delete();
+        DB::beginTransaction();
 
-        return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil dihapus.');
+        try {
+            $pelajaran->delete();
+
+            DB::commit();
+
+            return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil dihapus.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus pelajaran.']);
+        }
     }
 }
