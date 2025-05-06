@@ -15,7 +15,7 @@ class Jadwal extends Model
         'jam_selesai',
         'kelas_id',
         'pelajaran_id',
-        'guru_id', // jika menggunakan guru
+        'guru_id', 
     ];
 
     public function kelas()

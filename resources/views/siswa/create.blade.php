@@ -19,7 +19,8 @@
                 </div>
             @endif
 
-            <form action="{{ route('siswa.store') }}" method="POST">
+            {{-- 🛠️ Tambahkan enctype agar file bisa dikirim --}}
+            <form action="{{ route('siswa.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -35,6 +36,12 @@
                 <div class="mb-3">
                     <label for="kelas" class="form-label">Kelas</label>
                     <input type="text" name="kelas" id="kelas" class="form-control" placeholder="Contoh: X IPA 1" required>
+                </div>
+
+                {{-- 🔽 Input untuk Upload Foto --}}
+                <div class="mb-3">
+                    <label for="foto" class="form-label">Foto Siswa</label>
+                    <input type="file" name="foto" id="foto" class="form-control" accept="image/*">
                 </div>
 
                 <div class="d-flex justify-content-between">
