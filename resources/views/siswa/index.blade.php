@@ -18,9 +18,10 @@
 
     <div class="card shadow-sm">
         <div class="card-body p-0">
-            <table class="table table-hover table-bordered mb-0">
+            <table class="table table-hover table-bordered mb-0 align-middle">
                 <thead class="table-light">
                     <tr>
+                        <th>Foto</th>
                         <th>Nama</th>
                         <th>NISN</th>
                         <th>Kelas</th>
@@ -30,6 +31,13 @@
                 <tbody>
                     @forelse($siswas as $siswa)
                         <tr>
+                            <td class="text-center" style="width: 80px;">
+                                @if($siswa->foto)
+                                    <img src="{{ asset($siswa->foto) }}" alt="Foto" width="50" height="50" class="rounded-circle object-fit-cover">
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td>{{ $siswa->nama }}</td>
                             <td>{{ $siswa->nisn }}</td>
                             <td>{{ $siswa->kelas }}</td>
@@ -48,7 +56,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted">Belum ada data siswa.</td>
+                            <td colspan="5" class="text-center text-muted">Belum ada data siswa.</td>
                         </tr>
                     @endforelse
                 </tbody>
