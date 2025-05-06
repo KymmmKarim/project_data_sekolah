@@ -31,7 +31,6 @@ class SiswaController extends Controller
         $this->authorize('tambah data');
 
         $request->validate([
-
             'nama' => 'required',
             'nisn' => 'required|unique:siswas',
             'kelas' => 'required',
@@ -47,25 +46,15 @@ class SiswaController extends Controller
             $data['foto'] = 'storage/foto/' . $filename;
         }
 
-        Siswa::create($data);([
-
-            'nama'  => 'required',
-            'nisn'  => 'required|unique:siswas',
-            'kelas' => 'required',
-        ]);
-
-        Siswa::create($request->all());
-
+        Siswa::create($data);
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil ditambahkan.');
     }
-
 
     public function show(Siswa $siswa)
     {
         // bisa diisi jika kamu ingin menampilkan detail siswa
     }
-
 
     public function edit(Siswa $siswa)
     {
@@ -83,7 +72,6 @@ class SiswaController extends Controller
         $this->authorize('edit data');
 
         $request->validate([
-
             'nama' => 'required',
             'nisn' => 'required|unique:siswas,nisn,' . $siswa->id,
             'kelas' => 'required',
@@ -104,14 +92,7 @@ class SiswaController extends Controller
             $data['foto'] = 'storage/foto/' . $filename;
         }
 
-        $siswa->update($data);([
-
-            'nama'  => 'required',
-            'nisn'  => 'required|unique:siswas,nisn,' . $siswa->id,
-            'kelas' => 'required',
-        ]);
-
-        $siswa->update($request->all());
+        $siswa->update($data);
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil diperbarui.');
     }
@@ -120,12 +101,10 @@ class SiswaController extends Controller
     {
         $this->authorize('hapus data');
 
-
         // Hapus foto dari storage jika ada
         if ($siswa->foto && Storage::exists(str_replace('storage/', 'public/', $siswa->foto))) {
             Storage::delete(str_replace('storage/', 'public/', $siswa->foto));
         }
-
 
         $siswa->delete();
 
