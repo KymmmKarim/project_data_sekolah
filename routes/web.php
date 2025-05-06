@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GuruController;
 use App\Http\Controllers\PelajaranController;
 use App\Http\Controllers\JadwalController;
 use App\Http\Controllers\KelasController;
@@ -41,4 +42,5 @@ Route::middleware(['auth'])->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::post('/gurus', [GuruController::class, 'store'])->name('gurus.store');
+Route::get('/guru/create', [GuruController::class, 'create'])->name('guru.create');
+Route::post('/guru/store', [GuruController::class, 'store'])->name('guru.store');

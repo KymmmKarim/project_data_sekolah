@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pelajaran extends Model
 {
-    use HasFactory;
+    protected $fillable = ['nama', 'guru_id'];
 
-    protected $fillable = ['nama'];
-
-    public function jadwals()
+    public function guru()
     {
-        return $this->hasMany(Jadwal::class);
+        return $this->belongsTo(Guru::class);
     }
 }

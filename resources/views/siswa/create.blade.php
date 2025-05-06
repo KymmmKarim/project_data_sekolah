@@ -7,6 +7,17 @@
             <h4 class="mb-0">Tambah Data Siswa</h4>
         </div>
         <div class="card-body">
+        <form method="POST" action="{{ route('guru.store') }}">
+    @csrf
+    <input type="text" name="name" placeholder="Nama Guru">
+    <input type="email" name="email" placeholder="Email Guru">
+    
+    <input type="text" name="pelajarans[]" placeholder="Pelajaran 1">
+    <input type="text" name="pelajarans[]" placeholder="Pelajaran 2">
+    <input type="text" name="pelajarans[]" placeholder="Pelajaran 3">
+
+    <button type="submit">Simpan</button>
+</form>
 
             @if($errors->any())
                 <div class="alert alert-danger">
@@ -18,6 +29,17 @@
                     </ul>
                 </div>
             @endif
+<form method="POST" action="{{ route('guru.store') }}">
+    @csrf
+    <input type="text" name="name" placeholder="Nama Guru">
+    <input type="email" name="email" placeholder="Email Guru">
+    
+    <input type="text" name="pelajarans[]" placeholder="Pelajaran 1">
+    <input type="text" name="pelajarans[]" placeholder="Pelajaran 2">
+    <input type="text" name="pelajarans[]" placeholder="Pelajaran 3">
+
+    <button type="submit">Simpan</button>
+</form>
 
             {{-- 🛠️ Tambahkan enctype agar file bisa dikirim --}}
             <form action="{{ route('siswa.store') }}" method="POST" enctype="multipart/form-data">
