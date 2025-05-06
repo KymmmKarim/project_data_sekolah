@@ -11,13 +11,18 @@ class SiswaController extends Controller
     public function index()
     {
         $this->authorize('lihat data');
-        $siswas = Siswa::all();
-        return view('siswa.index', compact('siswas'));
+
+        $data = [
+            'siswas' => Siswa::all(),
+        ];
+
+        return view('siswa.index', $data);
     }
 
     public function create()
     {
         $this->authorize('tambah data');
+
         return view('siswa.create');
     }
 
@@ -26,6 +31,7 @@ class SiswaController extends Controller
         $this->authorize('tambah data');
 
         $request->validate([
+
             'nama' => 'required',
             'nisn' => 'required|unique:siswas',
             'kelas' => 'required',
@@ -41,20 +47,35 @@ class SiswaController extends Controller
             $data['foto'] = 'storage/foto/' . $filename;
         }
 
-        Siswa::create($data);
+        Siswa::create($data);([
+
+            'nama'  => 'required',
+            'nisn'  => 'required|unique:siswas',
+            'kelas' => 'required',
+        ]);
+
+        Siswa::create($request->all());
+
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil ditambahkan.');
     }
+
 
     public function show(Siswa $siswa)
     {
         // bisa diisi jika kamu ingin menampilkan detail siswa
     }
 
+
     public function edit(Siswa $siswa)
     {
         $this->authorize('edit data');
-        return view('siswa.edit', compact('siswa'));
+
+        $data = [
+            'siswa' => $siswa,
+        ];
+
+        return view('siswa.edit', $data);
     }
 
     public function update(Request $request, Siswa $siswa)
@@ -62,6 +83,7 @@ class SiswaController extends Controller
         $this->authorize('edit data');
 
         $request->validate([
+
             'nama' => 'required',
             'nisn' => 'required|unique:siswas,nisn,' . $siswa->id,
             'kelas' => 'required',
@@ -82,7 +104,14 @@ class SiswaController extends Controller
             $data['foto'] = 'storage/foto/' . $filename;
         }
 
-        $siswa->update($data);
+        $siswa->update($data);([
+
+            'nama'  => 'required',
+            'nisn'  => 'required|unique:siswas,nisn,' . $siswa->id,
+            'kelas' => 'required',
+        ]);
+
+        $siswa->update($request->all());
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil diperbarui.');
     }
@@ -91,10 +120,12 @@ class SiswaController extends Controller
     {
         $this->authorize('hapus data');
 
+
         // Hapus foto dari storage jika ada
         if ($siswa->foto && Storage::exists(str_replace('storage/', 'public/', $siswa->foto))) {
             Storage::delete(str_replace('storage/', 'public/', $siswa->foto));
         }
+
 
         $siswa->delete();
 

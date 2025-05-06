@@ -15,13 +15,18 @@ class PelajaranController extends Controller
     public function index()
     {
         $this->authorize('lihat data');
-        $pelajarans = Pelajaran::all();
-        return view('pelajaran.index', compact('pelajarans'));
+
+        $data = [
+            'pelajarans' => Pelajaran::all(),
+        ];
+
+        return view('pelajaran.index', $data);
     }
 
     public function create()
     {
         $this->authorize('tambah data');
+
         return view('pelajaran.create');
     }
 
@@ -34,13 +39,19 @@ class PelajaranController extends Controller
         ]);
 
         Pelajaran::create($request->all());
+
         return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil ditambahkan.');
     }
 
     public function edit(Pelajaran $pelajaran)
     {
         $this->authorize('edit data');
-        return view('pelajaran.edit', compact('pelajaran'));
+
+        $data = [
+            'pelajaran' => $pelajaran,
+        ];
+
+        return view('pelajaran.edit', $data);
     }
 
     public function update(Request $request, Pelajaran $pelajaran)
@@ -52,6 +63,7 @@ class PelajaranController extends Controller
         ]);
 
         $pelajaran->update($request->all());
+
         return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil diupdate.');
     }
 
@@ -60,6 +72,7 @@ class PelajaranController extends Controller
         $this->authorize('hapus data');
 
         $pelajaran->delete();
+
         return redirect()->route('pelajaran.index')->with('success', 'Pelajaran berhasil dihapus.');
     }
 }
