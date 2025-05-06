@@ -25,4 +25,4 @@
         <a href="{{ route('pelajaran.index') }}" class="btn btn-secondary mt-2">Kembali</a>
     </form>
 </div>
-@endsection
+@endsection 

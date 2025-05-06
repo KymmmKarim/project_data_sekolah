@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Pelajaran extends Model
+class Subject extends Model
 {
-    protected $fillable = ['nama', 'guru_id'];
+    use HasFactory;
+
+    protected $fillable = ['guru_id', 'name'];
 
     public function guru()
     {
