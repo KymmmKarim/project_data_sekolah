@@ -11,16 +11,16 @@ class CreateJadwalsTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('jadwals', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('kelas_id')->constrained()->onDelete('cascade');
-            $table->foreignId('pelajaran_id')->constrained()->onDelete('cascade');
-            $table->foreignId('guru_id')->constrained('users')->onDelete('cascade');
-            $table->string('hari'); // contoh: Senin, Selasa
-            $table->time('jam_mulai');
-            $table->time('jam_selesai');
-            $table->timestamps();
-        });
+        //Schema::create('jadwals', function (Blueprint $table) {
+            //$table->id();
+            //$table->foreignId('kelas_id')->constrained()->onDelete('cascade');
+            //$table->foreignId('pelajaran_id')->constrained()->onDelete('cascade');
+            //$table->foreignId('guru_id')->constrained('users')->onDelete('cascade');
+            //$table->string('hari'); // contoh: Senin, Selasa
+            //$table->time('jam_mulai');
+            //$table->time('jam_selesai');
+            //$table->timestamps();
+        //});
     }
 
     /**
