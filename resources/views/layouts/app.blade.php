@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Sekolah</title>
-    
+
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
+
+    <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
     <style>
@@ -49,7 +55,8 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url('/dashboard') }}">Web Sekolah</a>
 
-            <div class="collapse navbar-collapse justify-content-end">
+            <!-- Menu -->
+            <div class="collapse navbar-collapse justify-content-end" id="navbarContent">
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     @auth
                         <li class="nav-item">
@@ -73,9 +80,13 @@
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main class="container mt-5">
         @yield('content')
     </main>
 
+    <!-- Script Stack -->
+    @stack('scripts')
+    @yield('scripts')
 </body>
 </html>
