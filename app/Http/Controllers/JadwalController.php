@@ -44,17 +44,40 @@ class JadwalController extends Controller
         $this->authorize('tambah data');
 
         $request->validate([
-            'hari'         => 'required|string',
-            'jam_mulai'    => 'required',
-            'jam_selesai'  => 'required',
-            'kelas_id'     => 'required|exists:kelas,id',
-            'pelajaran_id' => 'required|exists:pelajarans,id',
-            'guru_id'      => 'required|exists:users,id',
+            'jadwals' => 'required|array|min:1',
+            'jadwals.*.hari'         => 'required|string',
+            'jadwals.*.jam_mulai'    => 'required',
+            'jadwals.*.jam_selesai'  => 'required',
+            'jadwals.*.kelas_id'     => 'required|exists:kelas,id',
+            'jadwals.*.pelajaran_id' => 'required|exists:pelajarans,id',
+            'jadwals.*.guru_id'      => 'required|exists:users,id',
         ]);
 
-        Jadwal::create($request->all());
+        $errors = [];
 
-        return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil ditambahkan.');
+        foreach ($request->jadwals as $index => $data) {
+            $hari = strtolower(trim($data['hari'])); // Normalisasi
+            $exists = Jadwal::whereRaw('LOWER(hari) = ?', [$hari])
+                ->where('kelas_id', $data['kelas_id'])
+                ->where('pelajaran_id', $data['pelajaran_id'])
+                ->where('guru_id', $data['guru_id'])
+                ->exists();
+
+            if ($exists) {
+                $errors[] = "Jadwal ke-" . ($index + 1) . ": Kombinasi hari, pelajaran, dan kelas untuk guru ini sudah ada.";
+            }
+        }
+
+        if (count($errors) > 0) {
+            return back()->withErrors($errors)->withInput();
+        }
+
+        foreach ($request->jadwals as $data) {
+            $data['hari'] = strtolower(trim($data['hari'])); // Normalisasi saat simpan
+            Jadwal::create($data);
+        }
+
+        return redirect()->route('jadwal.index')->with('success', 'Semua jadwal berhasil ditambahkan.');
     }
 
     public function edit(Jadwal $jadwal)
@@ -84,7 +107,27 @@ class JadwalController extends Controller
             'guru_id'      => 'required|exists:users,id',
         ]);
 
-        $jadwal->update($request->all());
+        $hari = strtolower(trim($request->hari));
+
+        $exists = Jadwal::where('id', '!=', $jadwal->id)
+            ->whereRaw('LOWER(hari) = ?', [$hari])
+            ->where('kelas_id', $request->kelas_id)
+            ->where('pelajaran_id', $request->pelajaran_id)
+            ->where('guru_id', $request->guru_id)
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors(['Jadwal dengan kombinasi tersebut sudah ada untuk guru ini.'])->withInput();
+        }
+
+        $jadwal->update([
+            'hari'         => $hari,
+            'jam_mulai'    => $request->jam_mulai,
+            'jam_selesai'  => $request->jam_selesai,
+            'kelas_id'     => $request->kelas_id,
+            'pelajaran_id' => $request->pelajaran_id,
+            'guru_id'      => $request->guru_id,
+        ]);
 
         return redirect()->route('jadwal.index')->with('success', 'Jadwal berhasil diperbarui.');
     }
